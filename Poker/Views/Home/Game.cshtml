@@ -1,0 +1,653 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width">
+    <title>Poker Club -- Game Room</title>
+    <link href="~/Content/Site.css" rel="stylesheet">
+    <link href="~/Images/poker.png" rel="shortcut icon">
+    <link href="~/Content/PokerCardStyle.css" rel="stylesheet" />
+
+    <style>
+        #infoPlayer {
+            animation-name: example;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 31.75% 40% 25%;
+        }
+
+        @@keyframes example {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: yellow;
+            }
+
+            100% {
+                color: green;
+            }
+        }
+
+        #countdown {
+            animation-name: example1;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;
+        }
+
+        @@keyframes example1 {
+            0% {
+                color: #202020;
+            }
+
+            50% {
+                color: #DCDCDC;
+            }
+
+            100% {
+                color: black;
+            }
+        }
+
+        #ans {
+            animation-name: example2;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;
+        }
+
+        @@keyframes example2 {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: papayawhip;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        #entryFee {
+            animation-name: example3;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;
+        }
+
+        @@keyframes example3 {
+            0% {
+                color: red;
+            }
+
+            50% {
+                color: papayawhip;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        #tablePoker {
+        }
+
+        #rule {
+            text-align: center;
+            border: 1px solid red;
+        }
+
+        #rule hX {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #rule ol li {
+            text-align: left;
+            font-size: 16px;
+        }
+
+        #card {
+            text-align: center;
+            border: 1px solid red;
+        }
+
+        #card .img {
+            cursor: pointer;
+        }
+
+        #winWay {
+            width: auto;
+            max-width: 0%;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: max-width 3s linear;
+            font-size: 20px;
+        }
+
+        #checkBS:checked + #winWay {
+            max-width: 100%;
+        }
+
+        #feefee {
+            width: auto;
+            max-width: 0%;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: max-width 3s linear;
+            font-size: 20px;
+        }
+
+        #checkEF:checked + #feefee {
+            max-width: 100%;
+        }
+
+        .display-fade-out, .display-fade-out1 {
+            transform:scale(0);
+            transition: 1s;
+        }
+
+        .display-fade-out .img{
+            width:75%;
+            height:55%;
+        }
+    </style>
+
+</head>
+<body>
+    <header>
+        <h1><a href="/">Poker Club -- Game Room (Big or Small?)</a></h1>
+    </header>
+
+    <main>
+        <nav class="nav">
+            <span style="font-size: 2em; margin-right: 35px"><b>RoOM</b></span>
+            <span style="margin-right: 20px">Your name : <b id="name"></b></span>
+            <span style="margin-right: 20px">Position : <b id="position">-</b></span>
+            <span style="margin-right: 20px">Number of Players : <b id="numPlayer">0</b></span>
+            <span style="margin-right: 20px">Chips :  <b id="chip">0</b></span>
+            <span><button id="leaveG">Leave</button></span>
+        </nav>
+
+        <div style="text-align: center; margin-top:20px" id="info">
+            <span style="color: red" id="warn">NOT ENOUGH PLAYERS (At least 3 players)</span>
+            <p><button disabled id="startG" style="padding:0px 30px 0px 30px">Start</button></p>
+            <h1 id="infoPlayer" hidden>Waiting host to start the game ...</h1>
+        </div>
+
+        <div style="text-align: center; margin-top:20px" id="status" hidden>
+            <h1 id="countdown" style="color: #202020;">Please get ready to choose the number...</h1>
+        </div>
+
+        <div style="margin-top:20px; width: 100%" class="grid-container">
+            @* Poker table section *@
+            <div style="" id="tablePoker" class="display-fade-out1">
+                <div id="table"></div>
+            </div>
+
+            @* Cards section *@
+            <div id="card" style="display:grid; grid-template-columns:auto auto;">
+                <div class="display-fade-out">
+                    <p>First Card Choosen: </p>
+                    <input type="hidden" name="img1" value="" id="input1" />
+                    <img src="~/Images/pokerBack.png" id="img1" class="img" />
+                    <h1 class="count1">0</h1>
+                </div>
+                
+                <div class="display-fade-out">
+                    <p>Second Card Choosen: </p>
+                    <input type="hidden" name="img2" value="" id="input2" />
+                    <img src="~/Images/pokerBack.png" id="img2" class="img" />
+                    <h1 class="count2">0</h1>
+                </div>
+            </div>
+
+            @* Rules section *@
+            <div id="rule" class="display-fade-out1">
+                <hX>Victory Rules</hX>
+                <ol>
+                    <li>Everytime start the new game, winning way will be different</li>
+                    <li>Everytime start the new game, entry fee will be different</li>
+                </ol>
+                <p style="font-weight: bold">This round winning way: </p>
+
+                <input type="checkbox" id="checkEF" name="checkEF" style="display:none" />
+                <p id="feefee">Entry Fee: <span id="entryFee" style="font-size: 45px; text-transform: uppercase; font-weight: bold">0</span></p>
+                <input type="checkbox" id="checkBS" name="checkBS" style="display:none"/>
+                <p id="winWay">Select the <span id="ans" style="font-size: 35px; text-transform: uppercase; font-weight: bold">null</span> number</p>
+            </div>
+        </div>
+
+        @*<button id="add">Add</button>
+        <button id="minus">Minus</button>*@
+
+    </main>
+
+    <footer>
+        <b>Poker Club</b>&copy; @DateTime.Today.Year
+    </footer>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="~/signalr/js"></script>
+    <script>
+        // ----------------------------------------------------------------------------------------
+        // General --------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        // TODO: Get name from browser session storage
+        //       Redirect to '/' if no name
+        let name = sessionStorage.getItem('name');
+        if (name == null) {
+            location = '/';
+            throw 'ERROR: No name';
+        }
+
+        $('#name').text(name);
+
+        // TODO: Get game id from query string
+        //       Redirect to '/Home/List' if no game id
+        let gameId = new URL(location).searchParams.get('gameId');
+        if (gameId == null) {
+            location = '/Home/RoomList';
+            throw 'ERROR: No game id';
+        }
+
+        // ----------------------------------------------------------------------------------------
+        // Events ---------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        $('#leaveG').click(e => {
+            proxy.server.direction("game");
+            location = '/Home/RoomList';
+        });
+
+        $('#startG').click(e => {
+            proxy.server.hide();
+        });
+
+        // TODO: Implement window beforeunload event
+        //       Manually stop SignalR connection
+        $(window).on('beforeunload', e => {
+            $.connection.hub.stop();
+        });
+
+
+        // ----------------------------------------------------------------------------------------
+        // Proxy ----------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        const proxy = $.connection.pokerHub;
+
+        proxy.client = {
+
+            reject() {
+                location = '/Home/RoomList';
+            },
+
+            //test(num) {
+            //    alert(num);
+            //},
+
+            chip(num) {
+                $('#chip').text(num);
+            },
+
+            totalNum(game) {
+                let length = game.players.length;
+                let playerN = game.players[0].Name;
+
+                $('#numPlayer').text(length);     
+
+                if (length >= 3) {
+                    $('#startG').prop('disabled', false);
+                    $('#warn').prop('hidden', true);
+                }
+                else {
+                    $('#startG').prop('disabled', true);
+                    if (game.start == "no")
+                        $('#warn').prop('hidden', false);
+                    else
+                        $('#warn').prop('hidden', true);
+                }
+
+                if (name == playerN) {
+                    $('#position').text('Host');
+                }
+                else {
+                    $('#startG').prop('hidden', true);
+                    $('#position').text('Player');
+                    if (game.start == "no")
+                        $('#infoPlayer').prop('hidden', false);
+                }
+            },
+
+            info() {
+                alert("Host had been quit!");
+                location = '/Home/RoomList';
+            },
+
+            kick(player) {
+                if (name == player.Name) {
+                    if (player.Chip == 0) {
+                        alert("Player bankrap!");
+                    }
+                    else {
+                        alert("Player had been quit!");
+                    }
+                    location = "/";
+                }
+            },
+
+            back(input) {
+                if (input == name) {
+                    alert("Player back to room list");
+                    location = "/Home/RoomList";
+                }
+            },
+
+            duplicated(input) {
+                if (name == input) {
+                    alert("Duplicated User");
+                    location = "/Home/RoomList";
+                }
+            },
+
+            hide() {
+                $('#startG').prop('hidden', true);
+                $('#leaveG').prop('disabled', true);
+                $('#status').prop('hidden', false);
+                $('#infoPlayer').prop('hidden', true);
+            },
+
+            start(ttt, enFee) {
+                let cards = null;
+                let time = 1000;
+                let position = $("#position").text();
+               
+                if (position == "Host") {
+                    cards = initialCard();
+                    
+                    for (let i = 0; i <= 7; i++) {
+                        setTimeout(() => {
+                            proxy.server.setCards(cards, i);
+                            shuffle(cards);
+                        }, time);
+                        time += 500
+                    }
+
+                    time += 1000;
+
+                    setTimeout(() => {
+                        proxy.server.pickedCard();
+                    }, time);
+
+                    time += 1000;
+
+                }
+                else {
+                    time = 5000
+                }
+                
+                $('.display-fade-out1').css('transform', 'scale(1)');
+                setTimeout(() => {
+                    $("#checkEF")[0].checked = true;
+                    $('#entryFee').text(enFee);
+                }, time += 500);
+
+                setTimeout(() => {
+                    $("#checkBS")[0].checked = true;
+                    $('#ans').text(ttt);
+                    $('.display-fade-out').css('transform', 'scale(1)');
+                }, time += 500);
+
+
+                time += 2000;
+
+                for (let i = 15; i >= 0; i--) {
+                    setTimeout(() => $("#countdown").text(i), time);
+                    time += 1000;
+                }
+
+                setTimeout(() => $("#countdown").text("Time's up"), time);
+                setTimeout(() => $("#countdown").text("Open the card"), time += 1000);
+
+                setTimeout(() => proxy.server.checkWinLose(), time += 2000);
+            
+            },
+
+            pickedCard(cards) {
+                if ($("#position").text() == "Host") {
+                    pickedCards = randomPickCard(2, cards);
+                    alert(pickedCards);
+                    proxy.server.pokerCard(pickedCards);
+                }
+                
+            },
+
+            setCards(cards, firstTime) {
+                if (firstTime == 0) {
+                    arrangeCards(cards);
+                    setTimeout(() => tranformCard(cards),1500);
+                }
+                else {
+                    tranformCard(cards);
+                    if (firstTime == 7) {
+                        closeCard();
+                    }
+                }
+            },
+
+            pokerCard(card) {
+                if ($("#position").text() != "Host") {
+                    $('.' + card.card1).css('transform', 'translate(' + (250 + (i * 50)) + 'px,' + 350 + 'px) scale(1.5)');
+                    $('.' + card.card2).css('transform', 'translate(' + (250 + (i * 50)) + 'px,' + 350 + 'px) scale(1.5)');
+                }
+                $('#input1').val(card.card1);
+                $('#input2').val(card.card2);
+                setTimeout(() => {
+                    $('#img1').attr("src", `../Images/ImgPoker/${card.card1}.jpg`);
+                    $('#img2').attr("src", `../Images/ImgPoker/${card.card2}.jpg`);
+
+                }, 21000);
+            },
+
+            count(game) {
+                $('.count1').text(game.cardA);
+                $('.count2').text(game.cardB);
+            },
+
+            checkWinLose(winLose) {
+
+                let time = 1500;
+                $('#leaveG').prop('disabled', false);
+                proxy.server.openPublic();
+                for (let i = 10; i >= 0; i--) {
+                    setTimeout(() => $("#countdown").text(winLose + " (" + i + ")"), time);
+                    time += 1000;
+                }
+
+                time += 1000;
+                setTimeout(() => $("#countdown").text("Start new game"), time);
+                time += 2000;
+
+                setTimeout(() => proxy.server.initializeAll(), time);
+            },
+            initializeAll(game) {
+
+                proxy.client.totalNum(game);
+                if (game.players[0].Name == name) {
+                    $('#startG').prop('hidden', false);
+                }
+                $('#leaveG').prop('disabled', false);
+                $('#status').prop('hidden', true);
+                $('#infoPlayer').prop('hidden', true);
+                $('#input1').val("");
+                $('#input2').val("");
+                $('.count1').text("0");
+                $('.count2').text("0");
+                $('#img1').attr("src", `../Images/pokerBack.png`);
+                $('#img2').attr("src", `../Images/pokerBack.png`);
+                $("#countdown").text("Please get ready to choose the number...");
+                $('.display-fade-out').css('transform', 'scale(0)');
+                $('.display-fade-out1').css('transform', 'scale(0)');
+                //$('#warn').prop('hidden', false);
+                $('#ans').text(null);
+                $('#entryFee').text(0);
+                $('#img2').attr("style", "outline: none");
+                $('#img1').attr("style", "outline: none");
+                $('#checkBS')[0].checked = false;
+                $('#checkEF')[0].checked = false;
+                $('#table').empty();
+
+                proxy.client.totalNum(game);
+            },
+        };
+
+        // ----------------------------------------------------------------------------------------
+        // Connect --------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        $.connection.hub.qs = { page: 'game', gameId, name };
+        $.connection.hub.start()
+            .done(main)
+            .fail(fail);
+
+        function main() {
+            console.log('main');
+            proxy.server.direction("leave");
+        }
+
+        function fail() {
+            alert("Connection failed");
+            location = '/Home/RoomList';
+            proxy.server.direction("leave");
+        }
+
+
+
+        //hellper functions
+        function getRndInteger(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function tranformCard(cards) {
+            const maxColumn = 8;
+            const cardSizeY = 50;
+            var offSetX = 0;
+            var offSetY = 0;
+            var nextPositionX = 0;
+            var nextPositionY = 0;
+            var count = 0;
+            for (i of cards) {
+                // move the card to next position
+                $('.' + i).css('transform', 'translate(' + (nextPositionX - offSetX) + 'px,' + (nextPositionY - offSetY) + 'px)');
+                setTimeout(function () {
+                }, 1000);
+                count++;
+                nextPositionX += 50;
+                if (count >= maxColumn) {
+                    //set the x into new position and y into next line
+                    count = 0;
+                    nextPositionX = 0;
+                    nextPositionY += cardSizeY;
+                }
+            }
+
+        }
+        function closeCard() {
+            $('.flip-card-inner').css('transform', 'rotateY(180deg)');
+        }
+
+        function initialCard() {
+            var cards = [];
+            //initial the cards
+            for (let i = 0; i < 52; i++) {
+                cards[i] = i + 1;
+            }
+            //suffer the cards
+            shuffle(cards);
+            return cards;
+        }
+
+        //program functions
+        function shuffle(array) {
+            array.sort(() => Math.random() - 0.5);
+        }
+
+        function arrangeCards(cards) {
+            for (i of cards) {
+                // get the poker table
+                $('#table').append(`<div class="pokerCard ${i}">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <img src="../Images/ImgPoker/${i}.jpg" class="" />
+                                </div>
+                                <div class="flip-card-back">
+                                    <img src="../Images/pokerBack.png" alt="poker" style="">
+                                </div>
+                            </div>
+                        </div>`);
+            }
+        }
+        
+        function randomPickCard(n, cards) {
+            nCard = [];
+            for (let i = 0; i < n; i++) {
+                let n = getRndInteger(1, cards.length);
+                let card = cards[n];
+                cards.splice(n - 1, 1);
+                if (card != null) {
+                    $('.' + card).css('transform', 'translate(' + (250 + (i * 50)) + 'px,' + 350 + 'px) scale(1.5)');
+
+                    nCard.push(card);
+                }
+                else {
+                    i--;
+                }
+                
+
+            }
+            return nCard;
+        }
+
+        //select card
+        $('.img').click(function () {
+            
+            let text = $("#countdown").text();
+            let cchip = parseInt($("#chip").text());
+            let ffeee = parseInt($('#entryFee').text());
+
+            
+            if (text == "Time's up" || text == "Open the card" || text.substring(0, 7) == "You Win" || text.substring(0, 8) == "You Lose" || text.substring(0, 6) == "You no") {
+                alert("Time's up! Cannot choose the card.");
+            }
+            else if (cchip < ffeee && (($('#img1').css('outline') == "rgb(0, 0, 0) none 0px" && $('#img2').css('outline') == "rgb(0, 0, 0) none 0px")))
+            {
+                alert("No enough money to play! Please come next time.");
+            }
+            else {
+                let cardValue = $(this).parent().children('input').val();
+                alert(cardValue);
+
+                let imgSelect = $(this).prev().attr('id');
+
+                if (imgSelect == "input1") {
+                    $(this).attr("style", "outline-style: dashed; outline-offset: 1px; outline-color: blue");
+                    $('#img2').attr("style", "outline: none");
+                }
+                else {
+                    $(this).attr("style", "outline-style: dashed; outline-offset: 1px; outline-color: blue");
+                    $('#img1').attr("style", "outline: none");
+                }
+
+                proxy.server.cardChoosen($(this).prev().val().toString());
+            }
+        });
+
+    </script>
+</body>
+</html>

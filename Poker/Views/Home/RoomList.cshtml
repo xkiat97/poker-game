@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width">
+    <title>Poker Club -- Room List</title>
+    <link href="~/Content/Site.css" rel="stylesheet">
+    <link href="~/Images/poker.png" rel="shortcut icon">
+</head>
+<body>
+    <header>
+        <h1><a href="/">Poker Club -- Room List</a></h1>
+    </header>
+
+    <main>
+        <h1>List of ROOM</h1>
+
+        <p>Your name : <b id="name"></b></p>
+        <p>Online players: <b id="count">0</b></p>
+        <p>Chips: <b id="chip">0</b></p>
+
+        <div>
+            <button id="create" disabled>Create Room</button>
+            <button id="leaveH">Leave Hall</button>
+        </div>
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Room Id</th>
+                    <th>Host</th>
+                    <th>Number of Player</th>
+                    <th>Join Room</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="4">No room yet, create one?</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <b>Poker Club</b>&copy; @DateTime.Today.Year
+    </footer>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="~/signalr/js"></script>
+
+    <script>
+        let name = sessionStorage.getItem('name');
+        if (name == null) {
+            location = '/';
+            throw 'ERROR: No name';
+        }
+
+        $('#name').text(name);
+
+        // ----------------------------------------------------------------------------------------
+        // Functions ------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        function rowHtml(game) {
+
+            return `
+                <tr style=${game.start == "yes" ? "background-color:#DCDCDC" : null}>
+                    <td>${game.Id}</td>
+                    <td>${game.players[0].Name}</td>
+                    <td style="text-align: center">${game.players.length}</td >
+                    <td style="text-align: center"><button data-game-id="${game.Id}" ${game.start == "yes" ? "disabled" : null} style=${game.start == "yes" ? "border:none;color:black" : null}>${game.start == "yes" ? "Game started" : "Join"}</button></td>
+                </tr>
+            `;
+        }
+        
+        // ----------------------------------------------------------------------------------------
+        // Events ---------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        // TODO: Ask hub to create a new game
+        //       Get the game id and redirect to '/Home/Game?gameId=xxx'
+        $('#create').click(async e => {
+            proxy.server.direction("game");
+            let gameId = await proxy.server.create();
+            location = `/Home/Game?gameId=${gameId}`;
+        });
+        
+        // TODO: Get the game id and redirect to '/Home/Game?gameId=xxx'
+        $('tbody').on('click', 'button', function (e) {
+            proxy.server.direction("game");
+            let gameId = $(this).data('gameId');
+            location = `/Home/Game?gameId=${gameId}`;
+        });
+
+        //$('#leaveH').click(e => location = '/');
+        $('#leaveH').on('click', function (e) {
+            sessionStorage.clear();
+            location = '/';
+        });
+
+        // ----------------------------------------------------------------------------------------
+        // Proxy ----------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        const proxy = $.connection.pokerHub;
+
+        proxy.client = {
+
+            // TODO: Populate table with list of games
+            updateGameList(list) {
+                let html = '';
+
+                for (let game of list) {
+                    html += rowHtml(game);
+                }
+
+                if (list.length == 0) {
+                    html = '<tr><td colspan="4">No room yet, create one?</td></tr>';
+                }
+
+                $('tbody').html(html);
+            },
+
+            status(count) {
+                $('#count').text(count);
+            },
+
+            chip(num) {
+                 $('#chip').text(num);
+               
+            },
+            kick(player) {
+                if (name == player.Name) {
+                    if (player.Chip == 0) {
+                        alert("Player bankrap!");
+                    }
+                    else {
+                        alert("Player had been quit!");
+                    }
+                    location = "/";
+                }
+            },
+           
+            //test(num) {
+            //    alert(num);
+            //},
+        };
+
+        // ----------------------------------------------------------------------------------------
+        // Connect --------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------
+
+        $.connection.hub.qs = { page: 'list', name};
+        $.connection.hub.start().done(main);
+
+        function main() {
+            $('#create').prop('disabled', false);
+            proxy.server.direction("leave");
+        }
+
+
+
+    </script>
+</body>
+</html>

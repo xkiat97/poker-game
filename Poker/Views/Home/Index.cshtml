@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width">
+    <title>Poker Club</title>
+    <link href="~/Content/Site.css" rel="stylesheet">
+    <link href="~/Images/poker.png" rel="shortcut icon">
+</head>
+
+<body>
+    <header>
+        <h1><a href="~/">Poker Club</a></h1>
+    </header>
+
+    <main>
+        <h1>Join Poker CLUB</h1>
+
+        <form>
+            <label for="name">Enter name :</label>
+            <input id="name" autocomplete="off" autofocus>
+            <button>Submit</button>
+        </form>
+    </main>
+
+    <footer>
+        <b>Poker Club</b>&copy; @DateTime.Today.Year
+    </footer>
+
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="~/signalr/js"></script>
+    <script>
+
+        $('form').submit(e => {
+            e.preventDefault();
+
+            let name = $('#name').val().trim();
+            if (name) {
+                sessionStorage.setItem('name', name);
+                location = '/Home/RoomList';
+            }
+        });
+        
+    </script>
+
+</body>
+
+
+</html>
+

@@ -1,0 +1,48 @@
+﻿/***** Font *****/
+body, input, textarea, select, button {
+    font: 11pt Calibri;
+}
+
+/***** Layout *****/
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header, footer {
+    background-color: #ccc;
+    padding: 10px 50px;
+}
+
+header h1 {
+    margin: 0;
+    padding-left: 40px;
+    background: url('/Images/poker.png') no-repeat left center;
+    background-size: 32px;
+}
+
+header h1 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+main {
+    padding: 10px 50px;
+    flex: 1 1 auto;
+}
+
+main h1 {
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #999;
+    padding: 5px 10px;
+}
